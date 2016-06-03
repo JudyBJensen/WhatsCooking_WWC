@@ -101,7 +101,7 @@ vect_td = TfidfVectorizer(analyzer = 'word',  \
                         ngram_range = (1,2), \
                         #token_pattern = "[a-zA-Z]", \
                         #stop_words = 'english', \
-                        max_features = 2000, \
+                        max_features = 10000, \
                         lowercase = True, \
                         max_df = 0.5, \
                         min_df = 2)
@@ -158,32 +158,33 @@ from sklearn.metrics import classification_report as class_rep
 from sklearn import grid_search
 # original parameters = {'C':[1, 10], 'kernel':['linear', 'rbf'], 'gamma':[0.01, 0.1, 1]}
 #parameters = {'C':[1, 10], 'gamma':[0.1, 1]} #test 1
-parameters = {'C':[1, 5], 'gamma':[0.01, 0.1,]} #test 2
+#parameters = {'C':[1, 5], 'gamma':[0.01, 0.1,]} #test 2
 
 
-#clf = svm.SVC(kernel = 'linear')
-svr = svm.SVC(kernel = 'rbf')
-clf = grid_search.GridSearchCV(svr, parameters, scoring = 'f1')
-clf.fit(features_train_f, labels_train['cuisine'].values)
+clf = svm.SVC(kernel = 'linear')
+#svr = svm.SVC(kernel = 'rbf')
+#clf = grid_search.GridSearchCV(svr, parameters, scoring = 'f1')
 
+clf.fit(features_train_f, labels_train_f)
 
+pred = clf.predict(features_test_f)
 
 #==============================================================================
  #add code to process test file from yummly
-#test = pd.read_json("data/test.json")
-#test.loc[:, "ingred_count"] = test["ingredients"].apply(len)
-#test.loc[:, "cl_ing"]=test["ingredients"].apply(ingred_clean)
-#test_v  = vect_td.transform(test['cl_ing'])
-#test_v = test_v.toarray()
-#test_arr=np.array(test[['ingred_count']].values)
-#test_f = np.append(test_v, test_arr, axis = 1)
-#pred_cuisine = clf.predict(test_f) ##check prediction first
+test = pd.read_json("data/test.json")
+test.loc[:, "ingred_count"] = test["ingredients"].apply(len)
+test.loc[:, "cl_ing"]=test["ingredients"].apply(ingred_clean)
+test_v  = vect_td.transform(test['cl_ing'])
+test_v = test_v.toarray()
+test_arr=np.array(test[['ingred_count']].values)
+test_f = np.append(test_v, test_arr, axis = 1)
+pred_cuisine = clf.predict(test_f) ##check prediction first
 #
-#test['cuisine'] = pred_cuisine ## then try to add as a new column
+test['cuisine'] = pred_cuisine ## then try to add as a new column
 # 
 #
 ##test.to_csv("data/test.csv")
-#test.to_csv("data/test.csv", columns = ["id", "cuisine"])
+test.to_csv("data/test.csv", columns = ["id", "cuisine"])
 # 
 #==============================================================================
 accuracy = accuracy_score(labels_test_f, pred)
@@ -199,13 +200,16 @@ print "report: ", report
 # Compute confusion matrix
 from sklearn.metrics import confusion_matrix
 
+cuisine_labels = list(set(train.cuisine))
+c_labels = cuisine_labels.sort()
+
 def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.Blues):
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
     plt.colorbar()
-    tick_marks = np.arange(len(labels_test_f))
-    #plt.xticks(tick_marks, labels_test_f, rotation=45)
-    #plt.yticks(tick_marks, iris.target_names)
+    tick_marks = np.arange(len(cuisine_labels))
+    plt.xticks(tick_marks, cuisine_labels, rotation=45)
+    plt.yticks(tick_marks, cuisine_labels)
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
