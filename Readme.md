@@ -171,6 +171,7 @@ We graphed each cuisine and the number of ingredients used in each of their reci
 ###Kaggle result
 ![kaggle submission](homework/kaggleSub1.png)
 ###Confusion Matrix
-![confusion matrix](homework/wk3_cm.png)
+![confusion matrix](homework/cm_svm.png)
+
 [optimization](homework/wk3_optimize.png)
 
