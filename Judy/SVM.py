@@ -138,21 +138,9 @@ clf.fit(features_train_f, labels_train_f)
 pred = clf.predict(features_test_f)
 
 accuracy = accuracy_score(labels_test, pred)
-<<<<<<< HEAD
 report = class_rep(labels_test_f, pred)
 print "accuracy: ", accuracy
 print "report: ", report
-||||||| merged common ancestors
-report = class_rep(labels_test, pred)
-print "accuracy: ", accuracy
-print "report: ", report
-=======
-report = class_rep(labels_test, pred)
-print("accuracy: ", accuracy)
-print("report: ", report)
->>>>>>> f1991559fbada5de8ec94dfecf3cbcbbb1c11da1
-
-print(feature_name)
 
 # Compute confusion matrix
 from sklearn.metrics import confusion_matrix
