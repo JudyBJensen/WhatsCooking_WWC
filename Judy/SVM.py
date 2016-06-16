@@ -56,7 +56,7 @@ def ingred_clean(input):
     sublist = []
     for x in input:
         #remove everything but letters:
-        letters_only = re.sub("[^a-zA-Z]", " ", x) 
+        letters_only = re.sub("[^a-zA-Z]", " ", x)
 
         #Convert to lower case, split into individual words
         words = letters_only.lower().split()
@@ -72,7 +72,7 @@ def ingred_clean(input):
     # and return the result.
 
         sublist = sublist + meaningful_words    #return( " ".join( meaningful_words ))
-        #print(sublist #return meaningful_words)
+        #print sublist #return meaningful_words
     return(" ".join( sublist))
 
 train["cl_ing"]=train["ingredients"].apply(ingred_clean)
@@ -99,7 +99,7 @@ vectorizer = CountVectorizer(analyzer = "word",   \
                             min_df = 1, \
                             stop_words = None,   \
                             max_features = 5000)
-                            
+
 stopwords = vectorizer.fit(features_train['cl_ing']).stop_words_
 
 features_train_v = vectorizer.fit_transform(features_train['cl_ing'])
@@ -155,7 +155,7 @@ def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.Blues):
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
-    
+
 cm = confusion_matrix(labels_test_f, pred)
 np.set_printoptions(precision=2)
 print('Confusion matrix, without normalization')

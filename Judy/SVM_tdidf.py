@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-""" 
-    
+"""
+
     The dataset has the form:
 {
  "id": 24717,
@@ -19,7 +19,7 @@
      "sweet potatoes"
  ]
  },
-    
+
 """
 
 import json
@@ -32,9 +32,6 @@ import sklearn
 import os
 from collections import Counter
 
-os.getcwd()
-os.chdir('C:\Users\jbark1967\Documents\KaggleContests/WWC_WhatsCooking')
-
 train = pd.read_json("data/train.json")
 
 #Cuisine Stats
@@ -45,7 +42,7 @@ train = pd.read_json("data/train.json")
 # train_br.head()
 #==============================================================================
 
-#dataframe mods:  
+#dataframe mods:
 
 #add col w/ ingredient counts
 
@@ -63,15 +60,15 @@ def ingred_clean(input):
     sublist = []
     for x in input:
          #remove everything but letters:
-        letters_only = re.sub("[^a-zA-Z]", " ", x)  
-  
+        letters_only = re.sub("[^a-zA-Z]", " ", x)
+
          #Convert to lower case, split into individual words
-        word_split = letters_only.lower().split() 
+        word_split = letters_only.lower().split()
          #In Python, searching a set is much faster than searching
          #a list, so convert the stop words to a set.  add project specific sws
-        stops = set(stopwords.words("english"))   # - done by vectorizer  
+        stops = set(stopwords.words("english"))   # - done by vectorizer
         ing_stops = ['light', 'large', 'medium', 'plain', 'top', 'soften', \
-             'mince', 'ground', 'boneless', 'all', 'low', 'chop'] 
+             'mince', 'ground', 'boneless', 'all', 'low', 'chop']
         for ing in ing_stops:
              stops.add(ing)
          #Remove stop words
@@ -79,15 +76,15 @@ def ingred_clean(input):
          #apply stemmer
         stemmer = SnowballStemmer("english")
         stem_words = [stemmer.stem(m) for m in meaningful_words]
-         #Join the words back into one string separated by space, 
+         #Join the words back into one string separated by space,
          # and return the result.
-        sublist = sublist + stem_words    #return( " ".join( meaningful_words ))   
+        sublist = sublist + stem_words    #return( " ".join( meaningful_words ))
         #print sublist #return meaningful_words
     return(" ".join( sublist))
 
-train.loc[:, "cl_ing"]=train["ingredients"].apply(ingred_clean)   
+train.loc[:, "cl_ing"]=train["ingredients"].apply(ingred_clean)
 
-    
+
 #split feature/label and train/test
 from sklearn import cross_validation
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -105,14 +102,14 @@ vect_td = TfidfVectorizer(analyzer = 'word',  \
                         lowercase = True, \
                         max_df = 0.5, \
                         min_df = 2)
-                        
+
 
 
 #Create bag of words vector
 #==============================================================================
 # from sklearn.feature_extraction.text import CountVectorizer
-# 
-#     # Initialize the "CountVectorizer" object, set max features to 90% 
+#
+#     # Initialize the "CountVectorizer" object, set max features to 90%
 #     # len(set(clean_ingred_all))
 # vectorizer = CountVectorizer(analyzer = "word",   \
 #                             ngram_range=(1,2), \
@@ -122,14 +119,14 @@ vect_td = TfidfVectorizer(analyzer = 'word',  \
 #                             min_df = 1, \
 #                             stop_words = 'english',   \
 #                             max_features = None)
-#                             
+#
 #==============================================================================
 stopwords = vect_td.fit(features_train['cl_ing']).stop_words_
 #print stopwords
 
 vocab = vect_td.fit(features_train['cl_ing']).vocabulary_
 #print sorted(vocab.keys())
-                            
+
 features_train_v = vect_td.fit_transform(features_train['cl_ing'])
 features_test_v  = vect_td.transform(features_test['cl_ing'])
 
@@ -180,18 +177,16 @@ test_arr=np.array(test[['ingred_count']].values)
 test_f = np.append(test_v, test_arr, axis = 1)
 pred_cuisine = clf.predict(test_f) ##check prediction first
 #
+
 test['cuisine'] = pred_cuisine ## then try to add as a new column
-# 
-#
-##test.to_csv("data/test.csv")
 test.to_csv("data/test.csv", columns = ["id", "cuisine"])
 # 
-#==============================================================================
+
 accuracy = accuracy_score(labels_test_f, pred)
 report = class_rep(labels_test_f, pred)
 
-print "accuracy: ", accuracy
-print "report: ", report
+print("accuracy: ", accuracy)
+print("report: ", report)
 
 
 
@@ -213,7 +208,7 @@ def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.Blues):
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
-    
+
 cm = confusion_matrix(labels_test_f, pred)
 np.set_printoptions(precision=2)
 print('Confusion matrix, without normalization')
@@ -292,11 +287,11 @@ plt.show()
 
 
 
-                        
+
 #==============================================================================
 #==============================================================================
 ##
 #reference file = explore_Enron_data.py Udacity course
-#https://www.kaggle.com/c/word2vec-nlp-tutorial/details/part-1-for-beginners-bag-of-words                            
+#https://www.kaggle.com/c/word2vec-nlp-tutorial/details/part-1-for-beginners-bag-of-words
 #http://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html
 #
